@@ -71,7 +71,7 @@ describe('artist (e2e)', () => {
         .delete(artistsRoutes.delete(id))
         .set(commonHeaders);
 
-      // expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST status code in case of invalid id', async () => {

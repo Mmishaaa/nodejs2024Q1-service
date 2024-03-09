@@ -114,7 +114,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      // expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST in case of invalid required data', async () => {

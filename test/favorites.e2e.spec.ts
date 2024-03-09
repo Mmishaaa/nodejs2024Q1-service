@@ -176,6 +176,8 @@ describe('Favorites (e2e)', () => {
 
       expect(responseAfterDeletion.status).toBe(StatusCodes.OK);
 
+      console.log(responseAfterDeletion);
+
       const artistSearchRes = responseAfterDeletion.body.artists.find(
         (artist) => artist.id === artistId,
       );

@@ -4,7 +4,7 @@ import { Artist } from 'src/artists/interfaces/artist.interface';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UpdatePasswordDto } from 'src/users/dto/updatePasswordDto';
 
-import { v4 as uuidv4, validate } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from 'src/artists/dto/create-artist.dto';
 import { UpdateArtistDto } from 'src/artists/dto/update-artist.dto';
 import { Track } from 'src/tracks/interfaces/track.interface';
@@ -13,71 +13,24 @@ import { UpdateTrackDto } from 'src/tracks/dto/update-track.dto';
 import { Album } from 'src/albums/interfaces/album.interface';
 import { CreateAlbumDto } from 'src/albums/dto/create-album.dto';
 import { UpdateAlbumDto } from 'src/albums/dto/update-album.dto';
+import { Favorite } from 'src/favorites/interfaces/favorite.interface';
 
 @Injectable()
 export class DatabaseService {
-  users: User[] = [
-    {
-      id: 'd335f055-8d41-4128-9406-a3336315cd4b',
-      login: 'Login',
-      password: '1231212',
-      version: 1,
-      createdAt: 10,
-      updatedAt: 11,
-    },
-    {
-      id: 'd335f055-8d41-4128-9406-a3336315cd4b',
-      login: 'Login',
-      password: '1231212',
-      version: 1,
-      createdAt: 10,
-      updatedAt: 11,
-    },
-    {
-      id: 'd335f055-8d41-4128-9406-a3336315cd4b',
-      login: 'Login',
-      password: '1231212',
-      version: 1,
-      createdAt: 10,
-      updatedAt: 11,
-    },
-    {
-      id: 'd335f055-8d41-4128-9406-a3336315cd4b',
-      login: 'Login',
-      password: '1231212',
-      version: 1,
-      createdAt: 10,
-      updatedAt: 11,
-    },
-  ];
+  users: User[] = [];
 
-  tracks: Track[] = [
-    {
-      id: '0a35dd62-e09f-444b-a628-f4e7c6954f58',
-      name: 'Sum 2 Prove',
-      artistId: null,
-      albumId: null,
-      duration: 2,
-    },
-    {
-      id: '0a35dd62-e09f-444b-a628-f4e7c6954f59',
-      name: 'Sum 2 Prove',
-      artistId: null,
-      albumId: null,
-      duration: 2,
-    },
-    {
-      id: '0a35dd62-e09f-444b-a628-f4e7c6954f10',
-      name: 'Sum 2 Prove',
-      artistId: null,
-      albumId: null,
-      duration: 2,
-    },
-  ];
+  tracks: Track[] = [];
 
   artists: Artist[] = [];
 
   albums: Album[] = [];
+
+  favs: Favorite = {
+    tracks: [],
+    artists: [],
+    albums: [],
+  };
+
   getAllUsers() {
     return this.users;
   }
@@ -159,6 +112,13 @@ export class DatabaseService {
 
     const indexOfArtist = this.artists.findIndex((artist) => artist.id === id);
     this.artists.splice(indexOfArtist, 1);
+
+    const indexOfArtistInFavArtists = this.favs.artists.findIndex(
+      (artist) => artist.id === id,
+    );
+
+    if (indexOfArtistInFavArtists !== -1)
+      this.favs.artists.splice(indexOfArtistInFavArtists, 1);
   }
 
   /* ---------TRACKS--------- */
@@ -196,6 +156,12 @@ export class DatabaseService {
   deleteTrack(id: string) {
     const indexOfTrack = this.tracks.findIndex((track) => track.id === id);
     this.tracks.splice(indexOfTrack, 1);
+
+    const indexOfTrackInFavTracks = this.favs.tracks.findIndex(
+      (track) => track.id === id,
+    );
+    if (indexOfTrackInFavTracks !== -1)
+      this.favs.tracks.splice(indexOfTrackInFavTracks, 1);
   }
 
   /* ---------ALBUMS--------- */
@@ -235,5 +201,53 @@ export class DatabaseService {
     const tracksInAlbum = this.tracks.filter((track) => track.albumId === id);
 
     tracksInAlbum.forEach((track) => (track.albumId = null));
+
+    const indexOfAlbumInFavAlbums = this.favs.albums.findIndex(
+      (album) => album.id === id,
+    );
+
+    if (indexOfAlbumInFavAlbums !== -1)
+      this.favs.albums.splice(indexOfAlbumInFavAlbums, 1);
+  }
+
+  /* ---------FAVORITES--------- */
+
+  getAllFavs() {
+    return this.favs;
+  }
+
+  addFavArtist(favArtist: Artist) {
+    this.favs.artists.push(favArtist);
+  }
+
+  addFavAlbum(favAlbum: Album) {
+    this.favs.albums.push(favAlbum);
+  }
+
+  addFavTrack(favTrack: Track) {
+    this.favs.tracks.push(favTrack);
+  }
+
+  deleteFavAlbum(favAlbum: Album) {
+    const indexOfFavAlbum = this.favs.albums.findIndex(
+      (album) => album.id === favAlbum.id,
+    );
+    this.favs.albums.splice(indexOfFavAlbum, 1);
+  }
+
+  deleteFavArtist(favArtist: Artist) {
+    const indexOfFavArtist = this.favs.artists.findIndex((artist) => {
+      artist.id === favArtist.id;
+    });
+
+    this.favs.artists.splice(indexOfFavArtist, 1);
+  }
+
+  deleteFavTrack(favTrack: Track) {
+    const indexOfTrack = this.favs.tracks.findIndex((track) => {
+      track.id === favTrack.id;
+    });
+
+    this.favs.tracks.splice(indexOfTrack, 1);
   }
 }
