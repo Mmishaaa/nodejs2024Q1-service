@@ -7,6 +7,9 @@ import { UpdatePasswordDto } from 'src/users/dto/updatePasswordDto';
 import { v4 as uuidv4, validate } from 'uuid';
 import { CreateArtistDto } from 'src/artists/dto/create-artist.dto';
 import { UpdateArtistDto } from 'src/artists/dto/update-artist.dto';
+import { Track } from 'src/tracks/interfaces/track.interface';
+import { CreateTrackDto } from 'src/tracks/dto/create-track.dto';
+import { UpdateTrackDto } from 'src/tracks/dto/update-track.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -45,29 +48,29 @@ export class DatabaseService {
     },
   ];
 
-  // tracks: Track[] = [
-  //   {
-  //     id: '0a35dd62-e09f-444b-a628-f4e7c6954f58',
-  //     name: 'Sum 2 Prove',
-  //     artistId: null,
-  //     albumId: null,
-  //     duration: 2,
-  //   },
-  //   {
-  //     id: '0a35dd62-e09f-444b-a628-f4e7c6954f59',
-  //     name: 'Sum 2 Prove',
-  //     artistId: null,
-  //     albumId: null,
-  //     duration: 2,
-  //   },
-  //   {
-  //     id: '0a35dd62-e09f-444b-a628-f4e7c6954f10',
-  //     name: 'Sum 2 Prove',
-  //     artistId: null,
-  //     albumId: null,
-  //     duration: 2,
-  //   },
-  // ];
+  tracks: Track[] = [
+    {
+      id: '0a35dd62-e09f-444b-a628-f4e7c6954f58',
+      name: 'Sum 2 Prove',
+      artistId: null,
+      albumId: null,
+      duration: 2,
+    },
+    {
+      id: '0a35dd62-e09f-444b-a628-f4e7c6954f59',
+      name: 'Sum 2 Prove',
+      artistId: null,
+      albumId: null,
+      duration: 2,
+    },
+    {
+      id: '0a35dd62-e09f-444b-a628-f4e7c6954f10',
+      name: 'Sum 2 Prove',
+      artistId: null,
+      albumId: null,
+      duration: 2,
+    },
+  ];
 
   artists: Artist[] = [];
   getAllUsers() {
@@ -116,18 +119,7 @@ export class DatabaseService {
   }
 
   findArtist(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
     const artist = this.artists.find((artist) => artist.id);
-
-    if (!artist)
-      throw new HttpException(
-        `track with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
     return artist;
   }
 
@@ -138,7 +130,6 @@ export class DatabaseService {
       grammy: createArtistDto.grammy,
     };
 
-    // const newUser = Object.assign({}, dto)
     this.artists.push(newArtist);
 
     const artistToReturn = { ...newArtist };
@@ -165,5 +156,48 @@ export class DatabaseService {
 
     // const artistAlbums = this.albums.filter((album) => album.artistId === id);
     // artistTracks.forEach((album) => (album.artistId = null));
+  }
+
+  getAllTracks() {
+    return this.tracks;
+  }
+
+  findTrack(id: string) {
+    return this.tracks.find((track) => track.id === id);
+  }
+
+  createTrack(createTrackDto: CreateTrackDto) {
+    const newTrack: Track = {
+      id: uuidv4(),
+      name: createTrackDto.name,
+      artistId: createTrackDto.artistId || null,
+      albumId: createTrackDto.albumId || null,
+      duration: createTrackDto.duration,
+    };
+
+    this.tracks.push(newTrack);
+
+    // const trackToReturn = { ...newTrack };
+    // delete trackToReturn.id;
+    // return trackToReturn;
+    return newTrack;
+  }
+
+  updateTrack(id: string, updateTrackDto: UpdateTrackDto) {
+    const trackToUpdate = this.findTrack(id);
+    trackToUpdate.albumId = updateTrackDto.albumId;
+    trackToUpdate.artistId = updateTrackDto.artistId;
+    trackToUpdate.duration = updateTrackDto.duration;
+    trackToUpdate.name = updateTrackDto.name;
+
+    // const trackToReturn = { ...trackToUpdate };
+    // delete trackToReturn.id;
+    // return trackToReturn;
+    return trackToUpdate;
+  }
+
+  deleteTrack(id: string) {
+    const indexOfTrack = this.tracks.findIndex((track) => track.id === id);
+    this.tracks.splice(indexOfTrack, 1);
   }
 }

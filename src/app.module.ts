@@ -7,9 +7,16 @@ import { DatabaseModule } from './database/database.module';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { ArtistsModule } from './artists/artists.module';
+import { TracksModule } from './tracks/tracks.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UsersModule, DatabaseModule, ArtistsModule],
+  imports: [
+    ConfigModule.forRoot(),
+    UsersModule,
+    DatabaseModule,
+    ArtistsModule,
+    TracksModule,
+  ],
   controllers: [AppController, UsersController],
   providers: [AppService],
 })

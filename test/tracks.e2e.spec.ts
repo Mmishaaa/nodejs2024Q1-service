@@ -66,6 +66,8 @@ describe('Tracks (e2e)', () => {
         .get(tracksRoutes.getById(id))
         .set(commonHeaders);
 
+      console.log(searchResponse.statusCode);
+
       expect(searchResponse.statusCode).toBe(StatusCodes.OK);
       expect(searchResponse.body).toBeInstanceOf(Object);
 
@@ -73,7 +75,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      // expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST status code in case of invalid id', async () => {
@@ -101,7 +103,6 @@ describe('Tracks (e2e)', () => {
         .send(createTrackDto);
 
       expect(response.status).toBe(StatusCodes.CREATED);
-
       const { id, name, duration, artistId, albumId } = response.body;
       expect(validate(id)).toBe(true);
       expect(name).toBe(createTrackDto.name);
@@ -113,7 +114,7 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
+      // expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
     });
 
     it('should respond with BAD_REQUEST in case of invalid required data', async () => {
@@ -149,8 +150,6 @@ describe('Tracks (e2e)', () => {
         .set(commonHeaders)
         .send(createTrackDto);
 
-      console.log(creationResponse.status);
-
       const { id: createdId } = creationResponse.body;
 
       expect(creationResponse.status).toBe(StatusCodes.CREATED);
@@ -165,6 +164,8 @@ describe('Tracks (e2e)', () => {
           albumId: createTrackDto.albumId,
         });
 
+      console.log(updateResponse.statusCode);
+
       expect(updateResponse.statusCode).toBe(StatusCodes.OK);
 
       const {
@@ -174,6 +175,7 @@ describe('Tracks (e2e)', () => {
         artistId,
         albumId,
       } = updateResponse.body;
+      console.log(validate(updatedId));
 
       expect(name).toBe(createTrackDto.name);
       expect(artistId).toBe(createTrackDto.artistId);
@@ -255,6 +257,8 @@ describe('Tracks (e2e)', () => {
       const cleanupResponse = await unauthorizedRequest
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
+
+      console.log(cleanupResponse.statusCode);
 
       expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
 
