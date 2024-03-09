@@ -39,7 +39,7 @@ export class ArtistsService {
         HttpStatus.BAD_REQUEST,
       );
 
-    const artist = this.databaseService.findUser(id);
+    const artist = this.databaseService.findArtist(id);
     if (!artist)
       throw new HttpException(
         `user with id: ${id} doesn't exist`,
@@ -56,17 +56,16 @@ export class ArtistsService {
   remove(id: string) {
     if (!validate(id))
       throw new HttpException(
-        'userId is invalid (not uuid)',
+        'id is invalid (not uuid)',
         HttpStatus.BAD_REQUEST,
       );
 
-    const user = this.databaseService.findUser(id);
-    if (!user)
+    const artist = this.databaseService.findArtist(id);
+    if (!artist)
       throw new HttpException(
-        `user with id: ${id} doesn't exist`,
+        `artist with id: ${id} doesn't exist`,
         HttpStatus.NOT_FOUND,
       );
     this.databaseService.deleteArtist(id);
-    return `Artist was successfully deleted`;
   }
 }

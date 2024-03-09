@@ -40,7 +40,7 @@ export class ArtistsController {
     return this.artistsService.update(id, updateArtistDto);
   }
 
-  // @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.artistsService.remove(id);

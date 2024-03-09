@@ -139,9 +139,6 @@ export class DatabaseService {
 
     this.artists.push(newArtist);
 
-    // const artistToReturn = { ...newArtist };
-    // delete artistToReturn.id;
-    // return artistToReturn;
     return newArtist;
   }
 
@@ -150,21 +147,18 @@ export class DatabaseService {
     artistToUpdate.name = updateArtistDto.name;
     artistToUpdate.grammy = updateArtistDto.grammy;
 
-    // const artistToReturn = { ...artistToUpdate };
-    // delete artistToReturn.id;
-    // return artistToReturn;
     return artistToUpdate;
   }
 
   deleteArtist(id: string) {
-    const indexOfArtist = this.artists.findIndex((artist) => artist.id === id);
-    this.artists.splice(indexOfArtist, 1);
-
     const artistTracks = this.tracks.filter((track) => track.artistId === id);
     artistTracks.forEach((track) => (track.artistId = null));
 
-    // const artistAlbums = this.albums.filter((album) => album.artistId === id);
-    // artistTracks.forEach((album) => (album.artistId = null));
+    const artistAlbums = this.albums.filter((album) => album.artistId === id);
+    artistAlbums.forEach((album) => (album.artistId = null));
+
+    const indexOfArtist = this.artists.findIndex((artist) => artist.id === id);
+    this.artists.splice(indexOfArtist, 1);
   }
 
   /* ---------TRACKS--------- */
@@ -204,7 +198,7 @@ export class DatabaseService {
     this.tracks.splice(indexOfTrack, 1);
   }
 
-  /* ---------TRACKS--------- */
+  /* ---------ALBUMS--------- */
 
   findAlbum(id: string) {
     return this.albums.find((album) => album.id === id);

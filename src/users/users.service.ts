@@ -74,6 +74,5 @@ export class UsersService {
       );
 
     this.databaseService.deleteUser(id);
-    return 'User was successfully deleted!';
   }
 }
