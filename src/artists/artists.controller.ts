@@ -17,7 +17,6 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 @Controller('artist')
 export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
-  @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body(ValidationPipe) createArtistDto: CreateArtistDto) {
     return this.artistsService.create(createArtistDto);

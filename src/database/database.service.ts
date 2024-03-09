@@ -10,6 +10,9 @@ import { UpdateArtistDto } from 'src/artists/dto/update-artist.dto';
 import { Track } from 'src/tracks/interfaces/track.interface';
 import { CreateTrackDto } from 'src/tracks/dto/create-track.dto';
 import { UpdateTrackDto } from 'src/tracks/dto/update-track.dto';
+import { Album } from 'src/albums/interfaces/album.interface';
+import { CreateAlbumDto } from 'src/albums/dto/create-album.dto';
+import { UpdateAlbumDto } from 'src/albums/dto/update-album.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -73,6 +76,8 @@ export class DatabaseService {
   ];
 
   artists: Artist[] = [];
+
+  albums: Album[] = [];
   getAllUsers() {
     return this.users;
   }
@@ -114,12 +119,14 @@ export class DatabaseService {
     this.users.splice(indexOfUser, 1);
   }
 
+  /* ---------ARTISTS--------- */
+
   getAllArtists() {
     return this.artists;
   }
 
   findArtist(id: string) {
-    const artist = this.artists.find((artist) => artist.id);
+    const artist = this.artists.find((artist) => artist.id === id);
     return artist;
   }
 
@@ -132,9 +139,10 @@ export class DatabaseService {
 
     this.artists.push(newArtist);
 
-    const artistToReturn = { ...newArtist };
-    delete artistToReturn.id;
-    return artistToReturn;
+    // const artistToReturn = { ...newArtist };
+    // delete artistToReturn.id;
+    // return artistToReturn;
+    return newArtist;
   }
 
   updateArtist(id: string, updateArtistDto: UpdateArtistDto) {
@@ -142,9 +150,10 @@ export class DatabaseService {
     artistToUpdate.name = updateArtistDto.name;
     artistToUpdate.grammy = updateArtistDto.grammy;
 
-    const artistToReturn = { ...artistToUpdate };
-    delete artistToReturn.id;
-    return artistToReturn;
+    // const artistToReturn = { ...artistToUpdate };
+    // delete artistToReturn.id;
+    // return artistToReturn;
+    return artistToUpdate;
   }
 
   deleteArtist(id: string) {
@@ -157,6 +166,8 @@ export class DatabaseService {
     // const artistAlbums = this.albums.filter((album) => album.artistId === id);
     // artistTracks.forEach((album) => (album.artistId = null));
   }
+
+  /* ---------TRACKS--------- */
 
   getAllTracks() {
     return this.tracks;
@@ -176,10 +187,6 @@ export class DatabaseService {
     };
 
     this.tracks.push(newTrack);
-
-    // const trackToReturn = { ...newTrack };
-    // delete trackToReturn.id;
-    // return trackToReturn;
     return newTrack;
   }
 
@@ -189,15 +196,50 @@ export class DatabaseService {
     trackToUpdate.artistId = updateTrackDto.artistId;
     trackToUpdate.duration = updateTrackDto.duration;
     trackToUpdate.name = updateTrackDto.name;
-
-    // const trackToReturn = { ...trackToUpdate };
-    // delete trackToReturn.id;
-    // return trackToReturn;
     return trackToUpdate;
   }
 
   deleteTrack(id: string) {
     const indexOfTrack = this.tracks.findIndex((track) => track.id === id);
     this.tracks.splice(indexOfTrack, 1);
+  }
+
+  /* ---------TRACKS--------- */
+
+  findAlbum(id: string) {
+    return this.albums.find((album) => album.id === id);
+  }
+
+  getAllAlbums() {
+    return this.albums;
+  }
+
+  createAlbum(createAlbumDto: CreateAlbumDto) {
+    const newAlbum: Album = {
+      id: uuidv4(),
+      name: createAlbumDto.name,
+      year: createAlbumDto.year,
+      artistId: createAlbumDto.artistId /*|| null*/,
+    };
+
+    this.albums.push(newAlbum);
+    return newAlbum;
+  }
+
+  updateAlbum(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const albumToUpdate = this.findAlbum(id);
+    albumToUpdate.name = updateAlbumDto.name;
+    albumToUpdate.artistId = updateAlbumDto.artistId;
+    albumToUpdate.year = updateAlbumDto.year;
+    return albumToUpdate;
+  }
+
+  deleteAlbum(id: string) {
+    const indexOfAlbum = this.albums.findIndex((album) => album.id === id);
+    this.albums.splice(indexOfAlbum, 1);
+
+    const tracksInAlbum = this.tracks.filter((track) => track.albumId === id);
+
+    tracksInAlbum.forEach((track) => (track.albumId = null));
   }
 }

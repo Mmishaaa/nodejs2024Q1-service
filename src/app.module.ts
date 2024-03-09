@@ -8,6 +8,7 @@ import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { ArtistsModule } from './artists/artists.module';
 import { TracksModule } from './tracks/tracks.module';
+import { AlbumsModule } from './albums/albums.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TracksModule } from './tracks/tracks.module';
     DatabaseModule,
     ArtistsModule,
     TracksModule,
+    AlbumsModule,
   ],
   controllers: [AppController, UsersController],
   providers: [AppService],
