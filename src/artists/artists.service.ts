@@ -1,65 +1,59 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CreateArtistDto } from './dto/create-artist.dto';
+import { UpdateArtistDto } from './dto/update-artist.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { v4 as uuidv4, validate } from 'uuid';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdatePasswordDto } from './dto/updatePasswordDto';
+import { validate } from 'uuid';
 
 @Injectable()
-export class UsersService {
+export class ArtistsService {
   constructor(private readonly databaseService: DatabaseService) {}
-
-  async getAllUsers() {
-    const users = this.databaseService.getAllUsers();
-    return users;
+  create(createArtistDto: CreateArtistDto) {
+    const artist = this.databaseService.createArtist(createArtistDto);
+    return artist;
   }
 
-  async getUserById(id: string) {
+  findAll() {
+    const artists = this.databaseService.getAllArtists();
+    return artists;
+  }
+
+  findOne(id: string) {
     if (!validate(id))
       throw new HttpException(
         'userId is invalid (not uuid)',
         HttpStatus.BAD_REQUEST,
       );
-    const user = this.databaseService.findUser(id);
-    if (!user)
+    const artist = this.databaseService.findArtist(id);
+    if (!artist)
       throw new HttpException(
         `user with id: ${id} doesn't exist`,
         HttpStatus.NOT_FOUND,
       );
-    return user;
+    return artist;
   }
 
-  async createUser(dto: CreateUserDto) {
-    const user = this.databaseService.createUser(dto);
-    return user;
-  }
-
-  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+  update(id: string, updateArtistDto: UpdateArtistDto) {
     if (!validate(id))
       throw new HttpException(
         'userId is invalid (not uuid)',
         HttpStatus.BAD_REQUEST,
       );
 
-    const user = this.databaseService.findUser(id);
-    if (!user)
+    const artist = this.databaseService.findUser(id);
+    if (!artist)
       throw new HttpException(
         `user with id: ${id} doesn't exist`,
         HttpStatus.NOT_FOUND,
       );
 
-    if (user.password !== updatePasswordDto.oldPassword)
-      throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
-
-    const updatedUser = this.databaseService.updatePassword(
+    const updatedArtist = this.databaseService.updateArtist(
       id,
-      updatePasswordDto,
+      updateArtistDto,
     );
-
-    updatedUser.updatedAt = Date.now();
-    return updatedUser;
+    return updatedArtist;
   }
 
-  async deleteUser(id: string) {
+  remove(id: string) {
     if (!validate(id))
       throw new HttpException(
         'userId is invalid (not uuid)',
@@ -72,8 +66,7 @@ export class UsersService {
         `user with id: ${id} doesn't exist`,
         HttpStatus.NOT_FOUND,
       );
-
-    this.databaseService.deleteUser(id);
-    return 'User was successfully deleted!';
+    this.databaseService.deleteArtist(id);
+    return `Artist was successfully deleted`;
   }
 }

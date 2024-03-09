@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Track } from 'src/tracks/interfaces/track.interface';
 import { User } from '../users/interfaces/user.interface';
 import { Artist } from 'src/artists/interfaces/artist.interface';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { UpdatePasswordDto } from 'src/users/dto/update-password-dto';
-import { UpdateTrackDto } from 'src/tracks/dto/update-track.dto';
-import { CreateTrackDto } from 'src/tracks/dto/create-track.dto';
+import { UpdatePasswordDto } from 'src/users/dto/updatePasswordDto';
+
 import { v4 as uuidv4, validate } from 'uuid';
+import { CreateArtistDto } from 'src/artists/dto/create-artist.dto';
+import { UpdateArtistDto } from 'src/artists/dto/update-artist.dto';
 
 @Injectable()
 export class DatabaseService {
@@ -45,29 +45,29 @@ export class DatabaseService {
     },
   ];
 
-  tracks: Track[] = [
-    {
-      id: '0a35dd62-e09f-444b-a628-f4e7c6954f58',
-      name: 'Sum 2 Prove',
-      artistId: null,
-      albumId: null,
-      duration: 2,
-    },
-    {
-      id: '0a35dd62-e09f-444b-a628-f4e7c6954f59',
-      name: 'Sum 2 Prove',
-      artistId: null,
-      albumId: null,
-      duration: 2,
-    },
-    {
-      id: '0a35dd62-e09f-444b-a628-f4e7c6954f10',
-      name: 'Sum 2 Prove',
-      artistId: null,
-      albumId: null,
-      duration: 2,
-    },
-  ];
+  // tracks: Track[] = [
+  //   {
+  //     id: '0a35dd62-e09f-444b-a628-f4e7c6954f58',
+  //     name: 'Sum 2 Prove',
+  //     artistId: null,
+  //     albumId: null,
+  //     duration: 2,
+  //   },
+  //   {
+  //     id: '0a35dd62-e09f-444b-a628-f4e7c6954f59',
+  //     name: 'Sum 2 Prove',
+  //     artistId: null,
+  //     albumId: null,
+  //     duration: 2,
+  //   },
+  //   {
+  //     id: '0a35dd62-e09f-444b-a628-f4e7c6954f10',
+  //     name: 'Sum 2 Prove',
+  //     artistId: null,
+  //     albumId: null,
+  //     duration: 2,
+  //   },
+  // ];
 
   artists: Artist[] = [];
   getAllUsers() {
@@ -111,45 +111,6 @@ export class DatabaseService {
     this.users.splice(indexOfUser, 1);
   }
 
-  getAllTracks() {
-    return this.tracks;
-  }
-
-  findTrack(id: string) {
-    const track = this.tracks.find((track) => track.id === id);
-    return track;
-  }
-
-  updateTrack(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = this.findTrack(id);
-    //track = Object.assign(track, updateTrackDto);
-    track.albumId = updateTrackDto.albumId;
-    track.artistId = updateTrackDto.artistId;
-    track.duration = updateTrackDto.duration;
-    track.name = updateTrackDto.name;
-
-    return track;
-  }
-
-  createTrack(createTrackDto: CreateTrackDto) {
-    const newTrack: Track = {
-      id: uuidv4(),
-      name: createTrackDto.name,
-      artistId: createTrackDto.artistId || null,
-      albumId: createTrackDto.albumId || null,
-      duration: createTrackDto.duration,
-    };
-
-    this.tracks.push(newTrack);
-
-    return newTrack;
-  }
-
-  deleteTrack(id: string) {
-    const indexOfTrack = this.tracks.findIndex((track) => track.id === id);
-    this.tracks.splice(indexOfTrack, 1);
-  }
-
   getAllArtists() {
     return this.artists;
   }
@@ -168,5 +129,41 @@ export class DatabaseService {
         HttpStatus.NOT_FOUND,
       );
     return artist;
+  }
+
+  createArtist(createArtistDto: CreateArtistDto) {
+    const newArtist: Artist = {
+      id: uuidv4(),
+      name: createArtistDto.name,
+      grammy: createArtistDto.grammy,
+    };
+
+    // const newUser = Object.assign({}, dto)
+    this.artists.push(newArtist);
+
+    const artistToReturn = { ...newArtist };
+    delete artistToReturn.id;
+    return artistToReturn;
+  }
+
+  updateArtist(id: string, updateArtistDto: UpdateArtistDto) {
+    const artistToUpdate = this.findArtist(id);
+    artistToUpdate.name = updateArtistDto.name;
+    artistToUpdate.grammy = updateArtistDto.grammy;
+
+    const artistToReturn = { ...artistToUpdate };
+    delete artistToReturn.id;
+    return artistToReturn;
+  }
+
+  deleteArtist(id: string) {
+    const indexOfArtist = this.artists.findIndex((artist) => artist.id === id);
+    this.artists.splice(indexOfArtist, 1);
+
+    const artistTracks = this.tracks.filter((track) => track.artistId === id);
+    artistTracks.forEach((track) => (track.artistId = null));
+
+    // const artistAlbums = this.albums.filter((album) => album.artistId === id);
+    // artistTracks.forEach((album) => (album.artistId = null));
   }
 }
