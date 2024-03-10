@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { DatabaseService } from 'src/database/database.service';
-import { v4 as uuidv4, validate } from 'uuid';
+import { validate } from 'uuid';
 @Injectable()
 export class TracksService {
   constructor(private readonly databaseService: DatabaseService) {}

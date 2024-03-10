@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '../users/interfaces/user.interface';
 import { Artist } from 'src/artists/interfaces/artist.interface';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
