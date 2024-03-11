@@ -17,10 +17,15 @@ git clone https://github.com/Mmishaaa/nodejs2024Q1-service.git
 npm install
 ```
 
-## Running application
+## Rename file
 
 ```
 rename .env.example file to .env
+```
+
+## Running application
+
+```
 npm start
 ```
 
