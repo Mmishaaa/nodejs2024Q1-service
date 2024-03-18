@@ -31,6 +31,11 @@ export class DatabaseService {
     albums: [],
   };
 
+  private async getUserWithoutPassword(user) {
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
   getAllUsers() {
     return this.users;
   }
@@ -39,7 +44,7 @@ export class DatabaseService {
     return this.users.find((user) => user.id === id);
   }
 
-  createUser(dto: CreateUserDto) {
+  async createUser(dto: CreateUserDto) {
     const newUser: User = {
       id: uuidv4(),
       login: dto.login,
@@ -49,22 +54,17 @@ export class DatabaseService {
       updatedAt: Date.now(),
     };
 
-    // const newUser = Object.assign({}, dto)
     this.users.push(newUser);
 
-    const userToReturn = { ...newUser };
-    delete userToReturn.password;
-    return userToReturn;
+    return await this.getUserWithoutPassword(newUser);
   }
 
-  updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
     const userToUpdate = this.findUser(id);
     userToUpdate.password = updatePasswordDto.newPassword;
     userToUpdate.version += 1;
 
-    const userToReturn = { ...userToUpdate };
-    delete userToReturn.password;
-    return userToReturn;
+    return await this.getUserWithoutPassword(userToUpdate);
   }
 
   deleteUser(id: string) {
@@ -97,9 +97,7 @@ export class DatabaseService {
 
   updateArtist(id: string, updateArtistDto: UpdateArtistDto) {
     const artistToUpdate = this.findArtist(id);
-    artistToUpdate.name = updateArtistDto.name;
-    artistToUpdate.grammy = updateArtistDto.grammy;
-
+    Object.assign(artistToUpdate, updateArtistDto);
     return artistToUpdate;
   }
 
@@ -146,10 +144,7 @@ export class DatabaseService {
 
   updateTrack(id: string, updateTrackDto: UpdateTrackDto) {
     const trackToUpdate = this.findTrack(id);
-    trackToUpdate.albumId = updateTrackDto.albumId;
-    trackToUpdate.artistId = updateTrackDto.artistId;
-    trackToUpdate.duration = updateTrackDto.duration;
-    trackToUpdate.name = updateTrackDto.name;
+    Object.assign(trackToUpdate, updateTrackDto);
     return trackToUpdate;
   }
 
@@ -188,9 +183,7 @@ export class DatabaseService {
 
   updateAlbum(id: string, updateAlbumDto: UpdateAlbumDto) {
     const albumToUpdate = this.findAlbum(id);
-    albumToUpdate.name = updateAlbumDto.name;
-    albumToUpdate.artistId = updateAlbumDto.artistId;
-    albumToUpdate.year = updateAlbumDto.year;
+    Object.assign(albumToUpdate, updateAlbumDto);
     return albumToUpdate;
   }
 

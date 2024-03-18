@@ -109,8 +109,6 @@ describe('artist (e2e)', () => {
         .delete(artistsRoutes.delete(id))
         .set(commonHeaders);
 
-      console.log(cleanupResponse.statusCode);
-
       expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
     });
 
@@ -234,7 +232,6 @@ describe('artist (e2e)', () => {
       const cleanupResponse = await unauthorizedRequest
         .delete(artistsRoutes.delete(id))
         .set(commonHeaders);
-      console.log(cleanupResponse.statusCode);
       expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
       const searchResponse = await unauthorizedRequest
         .get(artistsRoutes.getById(id))

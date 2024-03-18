@@ -102,7 +102,6 @@ describe('Users (e2e)', () => {
       expect(response.status).toBe(StatusCodes.CREATED);
 
       expect(login).toBe(createUserDto.login);
-      console.log(response.body);
       expect(response.body).not.toHaveProperty('password');
       expect(validate(id)).toBe(true);
       expect(version).toBe(1);

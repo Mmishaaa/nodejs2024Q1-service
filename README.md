@@ -20,7 +20,7 @@ npm install
 ## Rename file
 
 ```
-rename .env.example file to .env
+create new file .env and copy content from .env.example file
 ```
 
 ## Running application

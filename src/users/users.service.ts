@@ -8,23 +8,36 @@ import { UpdatePasswordDto } from './dto/updatePasswordDto';
 export class UsersService {
   constructor(private readonly databaseService: DatabaseService) {}
 
+  private async getById(id: string) {
+    if (!validate(id))
+      throw new HttpException(
+        'userId is invalid (not uuid)',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const user = this.databaseService.findUser(id);
+
+    if (!user)
+      throw new HttpException(
+        `user with id: ${id} doesn't exist`,
+        HttpStatus.NOT_FOUND,
+      );
+
+    return user;
+  }
+
+  private async getUserWithoutPassword(user) {
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
   async getAllUsers() {
     const users = this.databaseService.getAllUsers();
     return users;
   }
 
   async getUserById(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'userId is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const user = this.databaseService.findUser(id);
-    if (!user)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+    const user = this.getById(id);
     return user;
   }
 
@@ -34,23 +47,12 @@ export class UsersService {
   }
 
   async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
-    if (!validate(id))
-      throw new HttpException(
-        'userId is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    const user = this.databaseService.findUser(id);
-    if (!user)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+    const user = await this.getById(id);
 
     if (user.password !== updatePasswordDto.oldPassword)
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
 
-    const updatedUser = this.databaseService.updatePassword(
+    const updatedUser = await this.databaseService.updatePassword(
       id,
       updatePasswordDto,
     );
@@ -60,18 +62,7 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'userId is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-
-    const user = this.databaseService.findUser(id);
-    if (!user)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+    const user = await this.getById(id);
 
     this.databaseService.deleteUser(id);
   }

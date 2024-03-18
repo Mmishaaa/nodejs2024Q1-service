@@ -7,6 +7,25 @@ import { DatabaseService } from 'src/database/database.service';
 @Injectable()
 export class AlbumsService {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  async getById(id: string) {
+    if (!validate(id))
+      throw new HttpException(
+        'id is invalid (not uuid)',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const album = this.databaseService.findAlbum(id);
+
+    if (!album)
+      throw new HttpException(
+        `album with id: ${id} doesn't exist`,
+        HttpStatus.NOT_FOUND,
+      );
+
+    return album;
+  }
+
   create(createAlbumDto: CreateAlbumDto) {
     const newAlbum = this.databaseService.createAlbum(createAlbumDto);
     return newAlbum;
@@ -17,50 +36,20 @@ export class AlbumsService {
     return albums;
   }
 
-  findOne(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'userId is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const album = this.databaseService.findAlbum(id);
-    if (!album)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+  async findOne(id: string) {
+    const album = await this.getById(id);
     return album;
   }
 
-  update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    if (!validate(id))
-      throw new HttpException(
-        'userId is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const album = this.databaseService.findAlbum(id);
-    if (!album)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = await this.getById(id);
 
     const updatedAlbum = this.databaseService.updateAlbum(id, updateAlbumDto);
     return updatedAlbum;
   }
 
-  remove(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'userId is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const album = this.databaseService.findAlbum(id);
-    if (!album)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+  async remove(id: string) {
+    const album = await this.getById(id);
 
     this.databaseService.deleteAlbum(id);
   }

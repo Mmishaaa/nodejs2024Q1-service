@@ -6,6 +6,25 @@ import { validate } from 'uuid';
 @Injectable()
 export class TracksService {
   constructor(private readonly databaseService: DatabaseService) {}
+
+  private async getById(id: string) {
+    if (!validate(id))
+      throw new HttpException(
+        'id is invalid (not uuid)',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const track = this.databaseService.findTrack(id);
+
+    if (!track)
+      throw new HttpException(
+        `user with id: ${id} doesn't exist`,
+        HttpStatus.NOT_FOUND,
+      );
+
+    return track;
+  }
+
   async create(createTrackDto: CreateTrackDto) {
     const track = this.databaseService.createTrack(createTrackDto);
     return track;
@@ -16,49 +35,18 @@ export class TracksService {
   }
 
   async findOne(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const track = this.databaseService.findTrack(id);
-    if (!track)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+    const track = this.getById(id);
     return track;
   }
 
   async update(id: string, updateTrackDto: UpdateTrackDto) {
-    if (!validate(id))
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const track = this.databaseService.findTrack(id);
-    if (!track)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
-
+    const track = await this.getById(id);
     const updatedTrack = this.databaseService.updateTrack(id, updateTrackDto);
     return updatedTrack;
   }
 
   async remove(id: string) {
-    if (!validate(id))
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    const track = this.databaseService.findTrack(id);
-    if (!track)
-      throw new HttpException(
-        `user with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+    const track = await this.getById(id);
 
     this.databaseService.deleteTrack(id);
   }

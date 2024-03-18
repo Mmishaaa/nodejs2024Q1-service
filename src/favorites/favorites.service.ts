@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { AlbumsService } from 'src/albums/albums.service';
 import { DatabaseService } from 'src/database/database.service';
 import { validate } from 'uuid';
 
@@ -11,7 +12,7 @@ export class FavoritesService {
     return favs;
   }
 
-  addFavAlbum(id: string) {
+  private async getAlbumById(id: string) {
     if (!validate(id)) {
       throw new HttpException(
         'userId is invalid (not uuid)',
@@ -24,11 +25,10 @@ export class FavoritesService {
         `user with id: ${id} doesn't exist`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
-    this.databaseService.addFavAlbum(favAlbum);
     return favAlbum;
   }
 
-  addFavArtist(id: string) {
+  private async getArtistById(id: string) {
     if (!validate(id)) {
       throw new HttpException(
         'userId is invalid (not uuid)',
@@ -41,11 +41,10 @@ export class FavoritesService {
         `user with id: ${id} doesn't exist`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
-    this.databaseService.addFavArtist(favArtist);
     return favArtist;
   }
 
-  addFavTrack(id: string) {
+  private async getTrackById(id: string) {
     if (!validate(id))
       throw new HttpException(
         'userId is invalid (not uuid)',
@@ -58,61 +57,41 @@ export class FavoritesService {
         `user with id: ${id} doesn't exist`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
+    return favTrack;
+  }
 
+  async addFavAlbum(id: string) {
+    const favAlbum = await this.getAlbumById(id);
+    // const favAlbum = await this.albumService.getById(id);
+    this.databaseService.addFavAlbum(favAlbum);
+    return favAlbum;
+  }
+
+  async addFavArtist(id: string) {
+    const favArtist = await this.getArtistById(id);
+    this.databaseService.addFavArtist(favArtist);
+    return favArtist;
+  }
+
+  async addFavTrack(id: string) {
+    const favTrack = await this.getTrackById(id);
     this.databaseService.addFavTrack(favTrack);
     return favTrack;
   }
 
-  removeFavAlbum(id: string) {
-    if (!validate(id)) {
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const favAlbum = this.databaseService.findAlbum(id);
-    if (!favAlbum)
-      throw new HttpException(
-        `album with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
+  async removeFavAlbum(id: string) {
+    const favAlbum = await this.getAlbumById(id);
+    // const favAlbum = await this.albumService.getById(id);
     this.databaseService.deleteFavAlbum(favAlbum);
-    // return favAlbum;
   }
 
-  removeFavArtist(id: string) {
-    if (!validate(id)) {
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const favArtist = this.databaseService.findArtist(id);
-    if (!favArtist) {
-      throw new HttpException(
-        `artist with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+  async removeFavArtist(id: string) {
+    const favArtist = await this.getArtistById(id);
     this.databaseService.deleteFavArtist(favArtist);
   }
 
-  removeFavTrack(id: string) {
-    if (!validate(id)) {
-      throw new HttpException(
-        'id is invalid (not uuid)',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const favTrack = this.databaseService.findTrack(id);
-    if (!favTrack) {
-      throw new HttpException(
-        `track with id: ${id} doesn't exist`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+  async removeFavTrack(id: string) {
+    const favTrack = await this.getTrackById(id);
     this.databaseService.deleteFavTrack(favTrack);
   }
 }

@@ -66,8 +66,6 @@ describe('Tracks (e2e)', () => {
         .get(tracksRoutes.getById(id))
         .set(commonHeaders);
 
-      console.log(searchResponse.statusCode);
-
       expect(searchResponse.statusCode).toBe(StatusCodes.OK);
       expect(searchResponse.body).toBeInstanceOf(Object);
 
@@ -164,8 +162,6 @@ describe('Tracks (e2e)', () => {
           albumId: createTrackDto.albumId,
         });
 
-      console.log(updateResponse.statusCode);
-
       expect(updateResponse.statusCode).toBe(StatusCodes.OK);
 
       const {
@@ -175,7 +171,6 @@ describe('Tracks (e2e)', () => {
         artistId,
         albumId,
       } = updateResponse.body;
-      console.log(validate(updatedId));
 
       expect(name).toBe(createTrackDto.name);
       expect(artistId).toBe(createTrackDto.artistId);
@@ -257,8 +252,6 @@ describe('Tracks (e2e)', () => {
       const cleanupResponse = await unauthorizedRequest
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
-
-      console.log(cleanupResponse.statusCode);
 
       expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
 
