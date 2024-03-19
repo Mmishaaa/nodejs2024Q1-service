@@ -62,7 +62,6 @@ export class FavoritesService {
 
   async addFavAlbum(id: string) {
     const favAlbum = await this.getAlbumById(id);
-    // const favAlbum = await this.albumService.getById(id);
     this.databaseService.addFavAlbum(favAlbum);
     return favAlbum;
   }
@@ -81,7 +80,6 @@ export class FavoritesService {
 
   async removeFavAlbum(id: string) {
     const favAlbum = await this.getAlbumById(id);
-    // const favAlbum = await this.albumService.getById(id);
     this.databaseService.deleteFavAlbum(favAlbum);
   }
 
