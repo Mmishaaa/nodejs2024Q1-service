@@ -5,11 +5,11 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { serve, setup } from 'swagger-ui-express';
 import { load } from 'js-yaml';
-const PORT = process.env.PORT || 4000;
-
-const YAML_SWAGGER_FILENAME = 'api.yaml';
-
-const PATH_TO_YAML_FOLDER = './doc';
+import {
+  PORT,
+  YAML_SWAGGER_FILENAME,
+  PATH_TO_YAML_FOLDER,
+} from './constants/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
