@@ -17,6 +17,7 @@ export class FavoritesController {
   addFavArtist(@Param('id') id: string) {
     return this.favoritesService.addFavArtist(id);
   }
+
   @Post('track/:id')
   addFavTrack(@Param('id') id: string) {
     return this.favoritesService.addFavTrack(id);
