@@ -3,9 +3,11 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { validate } from 'uuid';
+import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class TracksService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  //constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private async getById(id: string) {
     if (!validate(id))
@@ -14,7 +16,11 @@ export class TracksService {
         HttpStatus.BAD_REQUEST,
       );
 
-    const track = this.databaseService.findTrack(id);
+    const track = await this.prisma.track.findUnique({
+      where: {
+        id: id,
+      },
+    });
 
     if (!track)
       throw new HttpException(
@@ -26,12 +32,16 @@ export class TracksService {
   }
 
   async create(createTrackDto: CreateTrackDto) {
-    const track = this.databaseService.createTrack(createTrackDto);
+    const track = await this.prisma.track.create({
+      data: {
+        ...createTrackDto,
+      },
+    });
     return track;
   }
 
   async findAll() {
-    return this.databaseService.getAllTracks();
+    return await this.prisma.track.findMany();
   }
 
   async findOne(id: string) {
@@ -41,13 +51,24 @@ export class TracksService {
 
   async update(id: string, updateTrackDto: UpdateTrackDto) {
     const track = await this.getById(id);
-    const updatedTrack = this.databaseService.updateTrack(id, updateTrackDto);
+    const updatedTrack = this.prisma.track.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...updateTrackDto,
+      },
+    });
     return updatedTrack;
   }
 
   async remove(id: string) {
     const track = await this.getById(id);
 
-    this.databaseService.deleteTrack(id);
+    await this.prisma.track.delete({
+      where: {
+        id: track.id,
+      },
+    });
   }
 }

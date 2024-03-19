@@ -43,9 +43,9 @@ model Track {
   id String @id @default(uuid())
   name String
   duration Int // integer number
-  artist Artist? @relation(fields: [artistId], references: [id])
+  artist Artist? @relation(fields: [artistId], references: [id], onDelete: SetNull)
   artistId String? @unique // refers to Artist
-  album Album? @relation(fields: [albumId], references: [id])
+  album Album? @relation(fields: [albumId], references: [id],  onDelete: SetNull)
   albumId String? // refers to Album
 }
 
