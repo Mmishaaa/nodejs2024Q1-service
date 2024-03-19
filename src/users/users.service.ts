@@ -3,10 +3,11 @@ import { DatabaseService } from 'src/database/database.service';
 import { validate } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/updatePasswordDto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private async getById(id: string) {
     if (!validate(id))
@@ -15,7 +16,11 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
 
-    const user = this.databaseService.findUser(id);
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
 
     if (!user)
       throw new HttpException(
@@ -23,27 +28,39 @@ export class UsersService {
         HttpStatus.NOT_FOUND,
       );
 
-    return user;
+    return this.transformUser(user);
   }
 
   private async getUserWithoutPassword(user) {
     const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return this.transformUser(userWithoutPassword);
+  }
+
+  private async transformUser(user) {
+    return {
+      ...user,
+      createdAt: new Date(user.createdAt).getTime(),
+      updatedAt: new Date(user.updatedAt).getTime(),
+    };
   }
 
   async getAllUsers() {
-    const users = this.databaseService.getAllUsers();
-    return users;
+    const users = await this.prisma.user.findMany();
+    return users.map((user) => this.transformUser(user));
   }
 
   async getUserById(id: string) {
-    const user = this.getById(id);
+    const user = await this.getById(id);
     return user;
   }
 
   async createUser(dto: CreateUserDto) {
-    const user = this.databaseService.createUser(dto);
-    return user;
+    const user = await this.prisma.user.create({
+      data: {
+        ...dto,
+      },
+    });
+    return this.getUserWithoutPassword(user);
   }
 
   async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
@@ -52,18 +69,26 @@ export class UsersService {
     if (user.password !== updatePasswordDto.oldPassword)
       throw new HttpException('oldPassword is wrong', HttpStatus.FORBIDDEN);
 
-    const updatedUser = await this.databaseService.updatePassword(
-      id,
-      updatePasswordDto,
-    );
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        version: { increment: 1 },
+        password: updatePasswordDto.newPassword,
+      },
+    });
 
-    updatedUser.updatedAt = Date.now();
-    return updatedUser;
+    return this.getUserWithoutPassword(updatedUser);
   }
 
   async deleteUser(id: string) {
     const user = await this.getById(id);
 
-    this.databaseService.deleteUser(id);
+    await this.prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 }
