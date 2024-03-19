@@ -11,6 +11,12 @@
 git clone https://github.com/Mmishaaa/nodejs2024Q1-service.git
 ```
 
+## Installing copyfiles
+
+```
+npm install copyfiles -g
+```
+
 ## Installing NPM modules
 
 ```
