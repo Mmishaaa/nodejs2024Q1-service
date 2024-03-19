@@ -3,10 +3,11 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { validate } from 'uuid';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ArtistsService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private async getById(id: string) {
     if (!validate(id))
@@ -15,7 +16,11 @@ export class ArtistsService {
         HttpStatus.BAD_REQUEST,
       );
 
-    const artist = this.databaseService.findArtist(id);
+    const artist = await this.prisma.artist.findUnique({
+      where: {
+        id: id,
+      },
+    });
 
     if (!artist)
       throw new HttpException(
@@ -26,13 +31,17 @@ export class ArtistsService {
     return artist;
   }
 
-  create(createArtistDto: CreateArtistDto) {
-    const artist = this.databaseService.createArtist(createArtistDto);
+  async create(createArtistDto: CreateArtistDto) {
+    const artist = await this.prisma.artist.create({
+      data: {
+        ...createArtistDto,
+      },
+    });
     return artist;
   }
 
-  findAll() {
-    const artists = this.databaseService.getAllArtists();
+  async findAll() {
+    const artists = await this.prisma.artist.findMany();
     return artists;
   }
 
@@ -44,15 +53,23 @@ export class ArtistsService {
   async update(id: string, updateArtistDto: UpdateArtistDto) {
     const artist = await this.getById(id);
 
-    const updatedArtist = this.databaseService.updateArtist(
-      id,
-      updateArtistDto,
-    );
+    const updatedArtist = await this.prisma.artist.update({
+      where: {
+        id: artist.id,
+      },
+      data: {
+        ...updateArtistDto,
+      },
+    });
     return updatedArtist;
   }
 
   async remove(id: string) {
     const artist = await this.getById(id);
-    this.databaseService.deleteArtist(id);
+    this.prisma.artist.delete({
+      where: {
+        id: artist.id,
+      },
+    });
   }
 }
