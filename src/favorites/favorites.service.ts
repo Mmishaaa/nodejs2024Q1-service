@@ -9,22 +9,22 @@ export class FavoritesService {
   // constructor(private readonly databaseService: DatabaseService) {}
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
+  async getFavs() {
     const favs = await this.prisma.favorites.findFirst({
       select: {
+        artists: {
+          select: {
+            id: true,
+            name: true,
+            grammy: true,
+          },
+        },
         albums: {
           select: {
             id: true,
             name: true,
             year: true,
             artistId: true,
-          },
-        },
-        artists: {
-          select: {
-            id: true,
-            name: true,
-            grammy: true,
           },
         },
         tracks: {
@@ -38,9 +38,49 @@ export class FavoritesService {
         },
       },
     });
+    if (favs) {
+      return favs;
+    }
+    await this.prisma.favorites.create({ data: {} });
+    return await this.prisma.favorites.findFirst({
+      select: {
+        artists: {
+          select: {
+            id: true,
+            name: true,
+            grammy: true,
+          },
+        },
+        albums: {
+          select: {
+            id: true,
+            name: true,
+            year: true,
+            artistId: true,
+          },
+        },
+        tracks: {
+          select: {
+            id: true,
+            name: true,
+            duration: true,
+            artistId: true,
+            albumId: true,
+          },
+        },
+      },
+    });
+  }
 
-    console.log(favs);
-    return favs;
+  async findAll() {
+    try {
+      const favorites = this.getFavs();
+
+      return favorites;
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to fetch favorites');
+    }
   }
 
   private async getAlbumById(id: string) {
@@ -162,12 +202,15 @@ export class FavoritesService {
         },
       },
     });
-    //this.databaseService.addFavTrack(favTrack);
     return favTrack;
   }
 
   async removeFavAlbum(id: string) {
     const favs = await this.prisma.favorites.findFirst();
+    if (!favs)
+      await this.prisma.favorites.create({
+        data: {},
+      });
     const favAlbum = await this.getAlbumById(id);
     await this.prisma.favorites.update({
       where: {
@@ -179,14 +222,18 @@ export class FavoritesService {
         },
       },
     });
+    console.log(await this.getFavs());
+
+    return undefined;
   }
 
   async removeFavArtist(id: string) {
     const favs = await this.prisma.favorites.findFirst();
-    // console.log('FAVS: ' + favs.favId);
-
+    if (!favs)
+      await this.prisma.favorites.create({
+        data: {},
+      });
     const favArtist = await this.getArtistById(id);
-    // console.log(favArtist);
     await this.prisma.favorites.update({
       where: {
         favId: favs.favId,
@@ -197,11 +244,14 @@ export class FavoritesService {
         },
       },
     });
-    // console.log(user);
+    console.log(await this.getFavs());
+    // return await this.getFavs();
+    return undefined;
   }
 
   async removeFavTrack(id: string) {
     const favs = await this.prisma.favorites.findFirst();
+
     const favTrack = await this.getTrackById(id);
 
     await this.prisma.favorites.update({
@@ -210,9 +260,12 @@ export class FavoritesService {
       },
       data: {
         tracks: {
-          disconnect: { id },
+          disconnect: { id: id },
         },
       },
     });
+    console.log(await this.getFavs());
+    // return await this.getFavs();
+    // return undefined;
   }
 }
