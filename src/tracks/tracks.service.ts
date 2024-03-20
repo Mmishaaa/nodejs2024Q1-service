@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { DatabaseService } from 'src/database/database.service';
 import { validate } from 'uuid';
 import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
@@ -50,7 +49,7 @@ export class TracksService {
   }
 
   async update(id: string, updateTrackDto: UpdateTrackDto) {
-    const track = await this.getById(id);
+    await this.getById(id);
     const updatedTrack = this.prisma.track.update({
       where: {
         id: id,
