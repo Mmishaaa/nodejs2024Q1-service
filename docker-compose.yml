@@ -1,5 +1,7 @@
+name: library_service
 services:
   api:
+    container_name: api
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,6 +22,7 @@ services:
       - /usr/src/app/node_modules
       - ./src:/usr/src/app/src
   postgres:
+    container_name: postgres
     build:
       context: ./src/prisma
       dockerfile: Dockerfile
