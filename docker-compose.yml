@@ -1,4 +1,4 @@
-name: library_service
+name: library-service
 services:
   api:
     container_name: api
