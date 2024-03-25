@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  login     String
+  password  String
+  version   Int      @default(1) // integer number, increments on update
+  createdAt DateTime @default(now()) // timestamp of creation
+  updatedAt DateTime @updatedAt // timestamp of last update
+}
+
+model Artist {
+  id          String     @id @default(uuid())
+  name        String
+  grammy      Boolean
+  albums      Album[]
+  tracks      Track[]
+  favourites  Favorites? @relation(fields: [favArtistId], references: [favId], onDelete: Cascade)
+  favArtistId String?
+}
+
+model Album {
+  id         String     @id @default(uuid())
+  name       String
+  year       Int
+  artist     Artist?    @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  artistId   String?    @unique
+  tracks     Track[]
+  favorites  Favorites? @relation(fields: [favAlbumId], references: [favId], onDelete: Cascade)
+  favAlbumId String?
+}
+
+model Track {
+  id         String     @id @default(uuid())
+  name       String
+  duration   Int // integer number
+  artist     Artist?    @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  artistId   String?    @unique // refers to Artist
+  album      Album?     @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  albumId    String? // refers to Album
+  favorites  Favorites? @relation(fields: [favTrackId], references: [favId], onDelete: Cascade)
+  favTrackId String?
+}
+
+model Favorites {
+  favId   String   @id @default(uuid())
+  artists Artist[] // favorite artists ids
+  albums  Album[] // favorite albums ids
+  tracks  Track[] // favorite tracks ids
+}

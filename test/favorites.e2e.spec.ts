@@ -404,7 +404,6 @@ describe('Favorites (e2e)', () => {
       const artistSearchResult = response.body.artists.find(
         (artist) => artist.id === artistId,
       );
-
       expect(artistSearchResult).toBeUndefined();
 
       const cleanupResponse = await unauthorizedRequest

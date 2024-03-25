@@ -101,7 +101,6 @@ describe('Tracks (e2e)', () => {
         .send(createTrackDto);
 
       expect(response.status).toBe(StatusCodes.CREATED);
-
       const { id, name, duration, artistId, albumId } = response.body;
       expect(validate(id)).toBe(true);
       expect(name).toBe(createTrackDto.name);
