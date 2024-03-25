@@ -4,6 +4,7 @@
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Docker - [Download & Install Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Downloading
 
@@ -11,10 +12,34 @@
 git clone https://github.com/Mmishaaa/nodejs2024Q1-service.git
 ```
 
-## Installing copyfiles
+## Go to project directory
 
 ```
-npm install copyfiles -g
+cd nodejs2024Q1-service
+```
+
+## Create .env file
+
+```
+create new file .env and copy content from .env.example file
+```
+
+## Starting application in docker
+
+```
+docker-compose up
+```
+
+## Link to application image
+
+```
+https://hub.docker.com/repository/docker/mmishaaa/library-service-api/general
+```
+
+## Scanning docker images for vulnerabilities
+
+```
+npm run docker:scout
 ```
 
 ## Installing NPM modules
@@ -23,16 +48,16 @@ npm install copyfiles -g
 npm install
 ```
 
-## Rename file
-
-```
-create new file .env and copy content from .env.example file
-```
-
 ## Running application
 
 ```
 npm start
+```
+
+## Running application in dev mode
+
+```
+npm start:dev
 ```
 
 After starting the app on port (4000 as default) you can open
